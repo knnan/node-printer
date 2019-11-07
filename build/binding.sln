@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "action_after_build", "action_after_build.vcxproj", "{CCBD607F-8D02-35A2-F866-04A7ABF5E863}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B5B17D3-72A7-7A5B-B862-685C13C23143} = {9B5B17D3-72A7-7A5B-B862-685C13C23143}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "node_printer", "node_printer.vcxproj", "{9B5B17D3-72A7-7A5B-B862-685C13C23143}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B5B17D3-72A7-7A5B-B862-685C13C23143}.Debug|x64.ActiveCfg = Debug|x64
+		{9B5B17D3-72A7-7A5B-B862-685C13C23143}.Debug|x64.Build.0 = Debug|x64
+		{9B5B17D3-72A7-7A5B-B862-685C13C23143}.Release|x64.ActiveCfg = Release|x64
+		{9B5B17D3-72A7-7A5B-B862-685C13C23143}.Release|x64.Build.0 = Release|x64
+		{CCBD607F-8D02-35A2-F866-04A7ABF5E863}.Debug|x64.ActiveCfg = Debug|x64
+		{CCBD607F-8D02-35A2-F866-04A7ABF5E863}.Debug|x64.Build.0 = Debug|x64
+		{CCBD607F-8D02-35A2-F866-04A7ABF5E863}.Release|x64.ActiveCfg = Release|x64
+		{CCBD607F-8D02-35A2-F866-04A7ABF5E863}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
