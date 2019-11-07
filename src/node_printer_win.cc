@@ -1,5 +1,4 @@
 #include "node_printer.hpp"
-#include "stdafx.h"
 
 #if _MSC_VER
 #include <windows.h>
@@ -46,9 +45,9 @@ namespace{
 
     struct PrinterHandle
     {
-        PrinterHandle(LPWSTR p)
+        PrinterHandle(LPWSTR iPrinterName)
         {
-            _ok = OpenPrinterW(p, &_printer, NULL);
+            _ok = OpenPrinterW(iPrinterName, &_printer, NULL);
         }
         ~PrinterHandle()
         {
@@ -65,13 +64,7 @@ namespace{
         HANDLE _printer;
         BOOL _ok;
     };
-    typedef struct UserForm 
-    {
-        DWORD  Flags;
-        LPTSTR pName;
-        SIZEL  Size;
-        RECTL  ImageableArea;
-    };
+
     const StatusMapType& getStatusMap()
     {
         static StatusMapType result;
@@ -311,7 +304,7 @@ namespace{
     	return s.str();
     }
 
-    std::string retrieveAndParseJobs(const LPWSTR p,
+    std::string retrieveAndParseJobs(const LPWSTR iPrinterName,
                                      const DWORD& iTotalJobs,
                                      v8::Handle<v8::Object> result_printer_jobs,
                                      PrinterHandle& iPrinterHandle)
@@ -682,10 +675,6 @@ MY_NODE_MODULE_CALLBACK(getSupportedPrintFormats)
 MY_NODE_MODULE_CALLBACK(PrintDirect)
 {
     MY_NODE_MODULE_HANDLESCOPE;
-    //START FOR SET PRINTER
-   
-
-
     //TODO: to move in an unique place win and posix input parameters processing
     REQUIRE_ARGUMENTS(iArgs, 5);
 
@@ -705,24 +694,6 @@ MY_NODE_MODULE_CALLBACK(PrintDirect)
     REQUIRE_ARGUMENT_STRINGW(iArgs, 1, printername);
     REQUIRE_ARGUMENT_STRINGW(iArgs, 2, docname);
     REQUIRE_ARGUMENT_STRINGW(iArgs, 3, type);
-    REQUIRE_ARGUMENT_STRINGW(iArgs, 5, formName);
-    REQUIRE_ARGUMENT_INTEGER(iArgs, 6, width);
-    REQUIRE_ARGUMENT_INTEGER(iArgs, 7, height);
-
-    // UserForm ucform  = new UserForm();
-    // ucform.Flags = 1;
-    // ucform.pName =(LPWSTR)(*printername) ;
-    // ucform.Size.cx = width;
-    // ucform.Size.cy = height;
-
-    // BOOL formstatus = false;
-    // formstatus = SetFormW(*printerHandle,formName,2,&ucform);
-    // if(!formstatus)
-    // {
-    //     std::string error_str("error on setting Form: ");
-    //     error_str += getLastErrorCodeAndMessage();
-    //     RETURN_EXCEPTION_STR(error_str.c_str());
-    // }
 
     BOOL     bStatus = true;
     // Open a handle to the printer.
@@ -737,91 +708,6 @@ MY_NODE_MODULE_CALLBACK(PrintDirect)
         error_str += getLastErrorCodeAndMessage();
         RETURN_EXCEPTION_STR(error_str.c_str());
     }
-
-
-    //change printer settings
-    // DWORD dwNeeded = 0;
-    // bFlag = GetPrinterW(*printerHandle, 2, 0, 0, &dwNeeded);
-    // if(bFlag == 0)
-    // {
-    //     RETURN_EXCEPTION_STR("Erron while getting p2i struct size");
-
-    // }
-    // PRINTER_INFO_2 *pi2 = (PRINTER_INFO_2 *)::GlobalAlloc(GPTR,dwNeeded);
-    // if ( NULL == pi2 )
-    // {
-    //     RETURN_EXCEPTION_STR("ERROR: Can't get malloc the buffer");
-    // }
-    // bFlag = ::GetPrinterW(*printerHandle, 2, (LPBYTE)pi2, dwNeeded, &dwNeeded);
-
-    DEVMODE   devmodeIn    = {0};                    
-    PDEVMODE  pDevmodeWork = NULL;              
-
-    // Get current printer properties
-    pDevmodeWork = PrinterUtils::ChangePrinterProperties(printername, &devmodeIn, NULL);
-
-    if( !pDevmodeWork )
-    {
-         RETURN_EXCEPTION_STR("Can't get printer settings");
-        
-    }
-    
-    if( pDevmodeWork->dmFields & DM_PAPER_LENGTH )
-    {
-        //Selects the number of copies printed if the device supports multiple-page copies. 
-        pDevmodeWork->dmPaperLength = height;  
-        //Indicate which parameter was changed 
-        pDevmodeWork->dmFields |= DM_PAPER_LENGTH;         
-    }
-     
-    if( pDevmodeWork->dmFields & DM_PAPER_WIDTH )
-    {
-        //Selects the number of copies printed if the device supports multiple-page copies. 
-        pDevmodeWork->dmPaperWidth = width;  
-        //Indicate which parameter was changed 
-        pDevmodeWork->dmFields |= DM_PAPER_WIDTH;         
-    }
-
-    // if( pDevmodeWork->dmFields & DM_ORIENTATION )
-    // {
-    //     pDevmodeWork->dmOrientation = DMORIENT_LANDSCAPE;
-    //     pDevmodeWork->dmFields |= DM_ORIENTATION;
-    // }
-
-    // if( pDevmodeWork->dmFields & DM_PAPERSIZE )
-    // {
-    //     pDevmodeWork->dmPaperSize = DMPAPER_A3;
-    //     pDevmodeWork->dmFields |= DM_PAPERSIZE;
-    // }
-
-    // if( pDevmodeWork->dmFields & DM_PRINTQUALITY )
-    // {
-    //     pDevmodeWork->dmPrintQuality = DMRES_HIGH;
-    //     pDevmodeWork->dmFields |= DM_PRINTQUALITY;
-    // }
-
-    // if( pDevmodeWork->dmFields & DM_COLOR )
-    // {
-    //     pDevmodeWork->dmColor = DMCOLOR_COLOR;
-    //     pDevmodeWork->dmFields |= DM_COLOR;
-    // }
-     if( !PrinterUtils::SetPrinterSetting(printername, *pDevmodeWork) )
-    {
-        RETURN_EXCEPTION_STR("Can't set printer settings");
-    }
-    else
-    {
-       RETURN_EXCEPTION_STR("SetPrinterSetting Ok");
-    }
-
-
-    free(pDevmodeWork);
-
-
-
-
-
-
 
     // Fill in the structure with info about this "document."
     DocInfo.pDocName = (LPWSTR)(*docname);
