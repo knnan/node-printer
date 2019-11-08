@@ -736,11 +736,11 @@ MY_NODE_MODULE_CALLBACK(PrintDirect)
 
     // Inform the spooler the document is beginning.
     dwJob = StartDocPrinterW(*printerHandle, 1, (LPBYTE)&DocInfo);
+        MySetPrinter((LPTSTR)(*printername), 1, length, width);
     if (dwJob > 0)
     {
         // Start a page.
         bStatus = StartPagePrinter(*printerHandle);
-        MySetPrinter((LPTSTR)(*printername), 1, length, width);
         if (bStatus)
         {
             // Send the data to the printer.
